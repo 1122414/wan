@@ -1,0 +1,101 @@
+ul {
+  list-style: none;
+}
+
+li {
+  margin-top: 25px;
+}
+
+.container ul {
+  margin-left: 30%;
+}
+
+/* 通用图标样式 */
+.valid-icon,
+.invalid-icon {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+/* 输入框聚焦时的图标样式 */
+.form-control:focus ~ .valid-icon,
+.form-control:focus ~ .invalid-icon {
+  opacity: 0.8;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .valid-icon,
+  .invalid-icon {
+    bottom: 8px;
+    right: 8px;
+  }
+}
+
+@media (hover: none) {
+  .form-control.is-valid,
+  .form-control.is-invalid {
+    animation-duration: 0.3s;
+  }
+}
+
+/* 添加在register.css末尾 */
+/* 输入框过渡效果 */
+.form-control {
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
+    background-position 0.3s ease-in-out;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+/* 成功状态动画 */
+.form-control.is-valid {
+  animation: validSlide 0.5s ease;
+}
+
+/* 失败状态动画 */
+.form-control.is-invalid {
+  animation: invalidShake 0.5s ease;
+}
+
+/* 反馈信息动画 */
+.invalid-feedback {
+  opacity: 1;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.is-invalid ~ .invalid-feedback,
+.is-invalid .invalid-feedback {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes validSlide {
+  from {
+    background-position: right 2rem center;
+  }
+  to {
+    background-position: right calc(0.375em + 0.1875rem) center;
+  }
+}
+
+@keyframes invalidShake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  75% {
+    transform: translateX(-4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}

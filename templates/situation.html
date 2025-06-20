@@ -1,0 +1,240 @@
+{% extends 'base.html' %} {% block title %}态势感知 - 网络安全态势感知平台{%
+endblock %} {% block head %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/situation.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+/>
+{% endblock %} {% block body %}
+<div class="situation-container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="section-header">
+        <h2>网络安全态势概览</h2>
+        <p class="text-muted">实时监控网络安全态势，及时发现潜在威胁</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <!-- 安全指标卡片 -->
+    <div class="col-md-3 mb-3">
+      <div class="card security-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">安全事件</h6>
+              <h3 class="card-title mb-0">24</h3>
+            </div>
+            <div class="security-icon bg-danger-subtle">
+              <i class="bi bi-shield-exclamation"></i>
+            </div>
+          </div>
+          <p class="card-text mt-3">
+            <small class="text-danger"
+              ><i class="bi bi-arrow-up-right"></i> 较昨日增长 12%</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card security-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">漏洞数量</h6>
+              <h3 class="card-title mb-0">17</h3>
+            </div>
+            <div class="security-icon bg-warning-subtle">
+              <i class="bi bi-bug"></i>
+            </div>
+          </div>
+          <p class="card-text mt-3">
+            <small class="text-success"
+              ><i class="bi bi-arrow-down-right"></i> 较昨日下降 5%</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card security-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">攻击来源</h6>
+              <h3 class="card-title mb-0">8</h3>
+            </div>
+            <div class="security-icon bg-primary-subtle">
+              <i class="bi bi-globe"></i>
+            </div>
+          </div>
+          <p class="card-text mt-3">
+            <small class="text-danger"
+              ><i class="bi bi-arrow-up-right"></i> 较昨日增长 3%</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card security-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">安全评分</h6>
+              <h3 class="card-title mb-0">78</h3>
+            </div>
+            <div class="security-icon bg-success-subtle">
+              <i class="bi bi-graph-up"></i>
+            </div>
+          </div>
+          <p class="card-text mt-3">
+            <small class="text-success"
+              ><i class="bi bi-arrow-up-right"></i> 较昨日提升 2%</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <!-- 安全态势图表 -->
+    <div class="col-md-8 mb-3">
+      <div class="card">
+        <div class="card-header bg-transparent">
+          <h5 class="card-title mb-0">安全事件趋势</h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-placeholder">
+            <!-- 图表将通过JavaScript渲染 -->
+            <div class="text-center py-5">
+              <i class="bi bi-bar-chart-line fs-1 text-muted"></i>
+              <p class="mt-3 text-muted">此处将显示安全事件趋势图表</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header bg-transparent">
+          <h5 class="card-title mb-0">攻击类型分布</h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-placeholder">
+            <!-- 图表将通过JavaScript渲染 -->
+            <div class="text-center py-5">
+              <i class="bi bi-pie-chart fs-1 text-muted"></i>
+              <p class="mt-3 text-muted">此处将显示攻击类型分布图表</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- 最新安全事件列表 -->
+    <div class="col-12">
+      <div class="card">
+        <div
+          class="card-header bg-transparent d-flex justify-content-between align-items-center"
+        >
+          <h5 class="card-title mb-0">最新安全事件</h5>
+          <button class="btn btn-sm btn-outline-primary">查看全部</button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">事件ID</th>
+                  <th scope="col">事件类型</th>
+                  <th scope="col">来源IP</th>
+                  <th scope="col">目标资产</th>
+                  <th scope="col">时间</th>
+                  <th scope="col">风险等级</th>
+                  <th scope="col">状态</th>
+                  <th scope="col">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SEC-2023-001</td>
+                  <td>SQL注入攻击</td>
+                  <td>192.168.1.105</td>
+                  <td>Web服务器</td>
+                  <td>2023-10-15 14:30:25</td>
+                  <td><span class="badge bg-danger">高</span></td>
+                  <td>
+                    <span class="badge bg-warning text-dark">处理中</span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-secondary">
+                      详情
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>SEC-2023-002</td>
+                  <td>暴力破解</td>
+                  <td>45.33.21.18</td>
+                  <td>认证服务器</td>
+                  <td>2023-10-15 13:45:12</td>
+                  <td><span class="badge bg-warning text-dark">中</span></td>
+                  <td><span class="badge bg-success">已解决</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-secondary">
+                      详情
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>SEC-2023-003</td>
+                  <td>恶意软件</td>
+                  <td>10.0.0.15</td>
+                  <td>工作站</td>
+                  <td>2023-10-15 11:20:45</td>
+                  <td><span class="badge bg-danger">高</span></td>
+                  <td><span class="badge bg-danger">未处理</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-secondary">
+                      详情
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>SEC-2023-004</td>
+                  <td>异常流量</td>
+                  <td>172.16.5.10</td>
+                  <td>数据库服务器</td>
+                  <td>2023-10-15 10:05:33</td>
+                  <td><span class="badge bg-info">低</span></td>
+                  <td><span class="badge bg-success">已解决</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-secondary">
+                      详情
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block js %}
+<script src="{{ url_for('static', filename='js/situation.js') }}"></script>
+{% endblock %}

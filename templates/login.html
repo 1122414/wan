@@ -1,0 +1,88 @@
+{% extends 'base.html' %} {% block title %}知了传课-登录{% endblock %} {% block
+head %}
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/login.css') }}"
+/>
+{% endblock %} {% block body %}
+<div class="login-container">
+  <div class="login-header">
+    <h2>用户登录</h2>
+    <p class="text-muted">欢迎回来，请登录您的账号</p>
+  </div>
+
+  <form
+    class="login-form needs-validation"
+    novalidate
+    id="loginForm"
+    method="POST"
+    action="{{ url_for('auth.login') }}"
+  >
+    <!-- 用户名/邮箱输入 -->
+    <div class="mb-4 position-relative">
+      <label for="username" class="form-label">用户名/邮箱</label>
+      <input
+        type="text"
+        class="form-control"
+        id="username"
+        name="username"
+        required
+        autocomplete="username"
+      />
+      <div class="invalid-feedback">请输入您的用户名或邮箱</div>
+    </div>
+
+    <!-- 密码输入 -->
+    <div class="mb-3 position-relative">
+      <label for="password" class="form-label">密码</label>
+      <div class="input-group">
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          required
+          autocomplete="current-password"
+        />
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          id="togglePassword"
+        >
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+      <div class="invalid-feedback">请输入您的密码</div>
+    </div>
+
+    <!-- 记住我和忘记密码 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="remember-me">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          id="rememberMe"
+          name="remember"
+        />
+        <label class="form-check-label" for="rememberMe">记住我</label>
+      </div>
+      <div class="forgot-password">
+        <a href="#">忘记密码?</a>
+      </div>
+    </div>
+
+    <!-- 登录按钮 -->
+    <button type="submit" class="btn btn-primary login-btn mb-3">登录</button>
+  </form>
+
+  <div class="login-footer">
+    <p>还没有账号? <a href="{{ url_for('auth.register') }}">立即注册</a></p>
+  </div>
+</div>
+{% endblock %} {% block js %}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}
