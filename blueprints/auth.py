@@ -12,6 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
+#login
 @bp.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -33,7 +34,7 @@ def login():
             # 如果勾选了记住我，设置session的过期时间更长
             if remember:
                 session.permanent = True
-                
+            print(11111)
             return jsonify({'code': 200, 'msg': '登录成功'})
         else:
             # 登录失败

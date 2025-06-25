@@ -59,8 +59,11 @@
         if (isValid) {
           if (form.checkValidity()) {
             // 使用AJAX提交表单
+            // console.log('当前：form' + form.elements.username.value)
             const formData = new FormData(form)
-
+            for (const [key, value] of formData.entries()) {
+              console.log(key, value)
+            }
             fetch(form.action, {
               method: 'POST',
               body: formData,
@@ -70,6 +73,7 @@
             })
               .then((response) => response.json())
               .then((data) => {
+                // console.log(data.code)
                 if (data.code === 200) {
                   // 登录成功
                   showMessage('登录成功，正在跳转...', 'success')
@@ -93,7 +97,7 @@
 
                   // 跳转到主页
                   setTimeout(() => {
-                    window.location.href = '/'
+                    window.location.href = '/service/situation'
                   }, 1500) // 增加延迟时间，确保用户能看到成功消息
                 } else {
                   // 登录失败

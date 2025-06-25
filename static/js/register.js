@@ -122,7 +122,7 @@
         console.log(data)
         if (data.code === 200) {
           console.log('验证码发送成功')
-          // startCountdown(60); TODO: 别忘记打开
+          startCountdown(60) //TODO: 别忘记打开
         } else {
           alert(data.msg)
           btn.disabled = false

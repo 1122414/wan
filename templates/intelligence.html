@@ -31,7 +31,7 @@ endblock %} {% block head %}
                   <input
                     type="text"
                     class="form-control"
-                    placeholder="输入关键词、CVE编号或威胁名称..."
+                    placeholder="输入关键词..."
                     aria-label="搜索情报"
                   />
                   <button class="btn btn-primary" type="submit">
@@ -40,16 +40,24 @@ endblock %} {% block head %}
                 </div>
               </div>
               <div class="col-md-3">
-                <select class="form-select" aria-label="情报类型">
+                <select
+                  class="form-select"
+                  id="category_select"
+                  aria-label="情报类型"
+                >
                   <option selected>所有类型</option>
-                  <option value="1">漏洞情报</option>
-                  <option value="2">威胁情报</option>
-                  <option value="3">攻击情报</option>
-                  <option value="4">防御情报</option>
+                  <option value="1">反恐维稳</option>
+                  <option value="2">黑灰产</option>
+                  <option value="3">走私贩毒</option>
+                  <option value="4">政治军事</option>
                 </select>
               </div>
               <div class="col-md-3">
-                <select class="form-select" aria-label="时间范围">
+                <select
+                  class="form-select"
+                  id="time_select"
+                  aria-label="时间范围"
+                >
                   <option selected>所有时间</option>
                   <option value="1">最近24小时</option>
                   <option value="2">最近7天</option>
@@ -111,31 +119,15 @@ endblock %} {% block head %}
                         </div>
                       </div>
                       <div class="col-md-4">
-                        <label class="form-label">情报来源</label>
+                        <label class="form-label">地区</label>
                         <select
                           class="form-select"
                           multiple
                           aria-label="情报来源"
                         >
-                          <option value="1">国家漏洞库</option>
-                          <option value="2">CNCERT</option>
-                          <option value="3">CNVD</option>
-                          <option value="4">CVE</option>
-                          <option value="5">安全厂商</option>
-                        </select>
-                      </div>
-                      <div class="col-md-4">
-                        <label class="form-label">影响资产类型</label>
-                        <select
-                          class="form-select"
-                          multiple
-                          aria-label="影响资产类型"
-                        >
-                          <option value="1">服务器</option>
-                          <option value="2">网络设备</option>
-                          <option value="3">应用系统</option>
-                          <option value="4">终端设备</option>
-                          <option value="5">物联网设备</option>
+                          <option value="1">中国</option>
+                          <option value="2">法国</option>
+                          <option value="3">巴西</option>
                         </select>
                       </div>
                     </div>
@@ -172,12 +164,12 @@ endblock %} {% block head %}
               <thead>
                 <tr>
                   <th scope="col">情报ID</th>
-                  <th scope="col">标题</th>
+                  <th scope="col">内容</th>
+                  <th scope="col">时间</th>
                   <th scope="col">类型</th>
-                  <th scope="col">发布时间</th>
-                  <th scope="col">风险等级</th>
-                  <th scope="col">来源</th>
-                  <th scope="col">操作</th>
+                  <th scope="col">用户名</th>
+                  <th scope="col">用户地区</th>
+                  <th scope="col">威胁等级</th>
                 </tr>
               </thead>
               <tbody>
@@ -250,6 +242,7 @@ endblock %} {% block head %}
     </div>
   </div>
 </div>
+
 {% endblock %} {% block js %}
 <script src="{{ url_for('static', filename='js/intelligence.js') }}"></script>
 {% endblock %}

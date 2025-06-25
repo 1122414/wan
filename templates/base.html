@@ -8,6 +8,8 @@
       href="{{ url_for('static', filename='bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css') }}"
     />
     <script src="{{ url_for('static', filename='bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js') }}"></script>
+    <script src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+    <!-- <script src="{{ url_for('static', filename='pyecharts.js') }}"></script> -->
     <!-- <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/init.css') }}"
@@ -35,18 +37,21 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/situation"
+                <a
+                  class="nav-link active"
+                  aria-current="page"
+                  href="/service/situation"
                   >态势感知</a
                 >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/intelligence">情报检索</a>
+                <a class="nav-link" href="/service/intelligence">情报检索</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/hotspot">热点分析</a>
+                <a class="nav-link" href="/service/hotspot">热点分析</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/social">社交网络</a>
+                <a class="nav-link" href="/service/social">社交网络</a>
               </li>
             </ul>
             <ul class="navbar-nav">

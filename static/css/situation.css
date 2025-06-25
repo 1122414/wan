@@ -57,6 +57,46 @@
   vertical-align: middle;
 }
 
+.circle-counter {
+  width: 100px;
+  height: 100px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.counter-label {
+  font-size: 16px;
+  color: #6c757d;
+}
+
+.current-monitor-total {
+  background-color: #007bff;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.current-monitor-total p {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+
+.current-monitor-total h1 {
+  margin: 0;
+  font-size: 36px;
+}
+
+#timestamp {
+  color: #6c757d;
+  font-size: 16px;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
   .security-card {
