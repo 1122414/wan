@@ -11,7 +11,7 @@ from flask_mail import Message
 from sqlalchemy import or_
 from pyecharts.charts import Graph
 from pyecharts.commons.utils import JsCode
-from pyecharts.charts import WordCloud, Pie
+from pyecharts.charts import WordCloud, Pie, Line, Bar
 from pyecharts import options as opts
 from pyecharts.globals import ThemeType
 from sklearn.feature_extraction.text import CountVectorizer
@@ -165,7 +165,18 @@ def search_intelligence():
     '1': '反恐维稳',
     '2': '黑灰产',
     '3': '走私贩毒',
-    '4': '政治军事'
+    '4': '政治军事',
+    '5': 'APT攻击',
+    '6': '供应链攻击',
+    '7': '勒索软件',
+    '8': '恶意程序',
+    '9': '数据泄露',
+    '10': '网络诈骗',
+    '11': '色情',
+    '12': '诈骗',
+    '13': '赌博',
+    '14': '零日漏洞',
+    '15': '黑客工具',
   }
   intel_type_name = type_mapping.get(intel_type, intel_type)
 
@@ -390,7 +401,7 @@ def get_wordcloud_data():
         # 获取所有情报内容
         contents = IntelligenceModel.query.with_entities(IntelligenceModel.content) \
             .order_by(IntelligenceModel.insert_time.desc()) \
-            .limit(1000) \
+            .limit(10000) \
             .all()
 
         # 如果没有内容，返回空
@@ -633,10 +644,11 @@ def refresh_wordcloud_cache():
 def social():
   return render_template('social.html')
 
+# 关系图
 @bp.route('/social/social_graph', methods=['GET', 'POST'])
 def social_graph():
     # 查询所有情报数据
-    intelligences = IntelligenceModel.query.limit(1000).all()
+    intelligences = IntelligenceModel.query.limit(10000).all()
     
     # 构建节点和边
     nodes = []
@@ -702,7 +714,6 @@ def social_graph():
         edges.append({
             "source": source['name'],
             "target": target['name'],
-            "lineStyle": {"width": random.randint(1, 5)}  # 随机宽度
         })
     
     # 创建微博风格关系图
@@ -743,3 +754,131 @@ def social_graph():
             'edges': edges
         }
     })
+
+
+# 在social_graph路由后面添加
+@bp.route('/social/topic_trends', methods=['GET'])
+def get_topic_trends():
+    from datetime import datetime, timedelta
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=30)
+
+    # 查询数据
+    intelligences = IntelligenceModel.query.filter(
+        IntelligenceModel.insert_time >= start_date,
+        IntelligenceModel.insert_time <= end_date
+    ).order_by(IntelligenceModel.insert_time.desc()).limit(1000).all()
+
+    # 使用jieba分词提取关键词
+    import jieba
+    import jieba.analyse
+    from collections import defaultdict
+
+    # 按周统计
+    time_periods = []
+    current_date = start_date
+    while current_date <= end_date:
+        # 添加边界检查：如果当前日期已经等于结束日期，直接添加最后一天并退出
+        if current_date == end_date:
+            time_periods.append((current_date, current_date))
+            break
+        
+        period_end = current_date + timedelta(days=7)
+        
+        # 如果计算出的结束日期超过总结束日期，则使用总结束日期
+        if period_end > end_date:
+            period_end = end_date
+        
+        time_periods.append((current_date, period_end))
+        
+        # 更新当前日期，确保向前推进
+        current_date = period_end + timedelta(days=1)
+        
+        # 防止日期超过总结束日期
+        if current_date > end_date:
+            break
+    
+    # 初始化结果
+    trends_data = {
+        'periods': [period[0].strftime('%m-%d') for period in time_periods],
+        'topics': defaultdict(list)
+    }
+    
+    # 停用词
+    stopwords = {
+        '加入', '我们', '欢迎', '联系', '需要', '合作', '一起', '可以', 
+        '进行', '提供', '服务', '方式', '了解', '详情', '请加', '添加',
+        '咨询', '获取', '点击', '关注', '扫描', '二维码', '进群', '频道',
+        '谢谢', '您好', '请问', '帮助', '支持', '免费', '优惠', '活动'
+    }
+    
+    # 对每个时间段进行处理
+    for i, (period_start, period_end) in enumerate(time_periods):
+        # 获取该时间段的内容
+        period_contents = [
+            intel.content for intel in intelligences 
+            if period_start <= intel.insert_time < period_end
+        ]
+        
+        # 合并内容
+        all_text = ' '.join(period_contents)
+        
+        # 提取关键词
+        if all_text:
+            keywords = jieba.analyse.extract_tags(all_text, topK=5, withWeight=True)
+            
+            # 过滤停用词
+            filtered_keywords = [(word, weight) for word, weight in keywords if word not in stopwords]
+            
+            # 更新趋势数据
+            for word, weight in filtered_keywords[:5]:  # 取前5个关键词
+                trends_data['topics'][word].append(round(weight * 100, 2))  # 将权重转换为百分比
+                
+                # 确保每个主题在每个时间段都有值
+                if len(trends_data['topics'][word]) < i + 1:
+                    # 填充缺失的时间段
+                    trends_data['topics'][word].extend([0] * (i + 1 - len(trends_data['topics'][word])))
+    
+    # 确保所有主题在所有时间段都有值
+    for topic in trends_data['topics']:
+        if len(trends_data['topics'][topic]) < len(time_periods):
+            trends_data['topics'][topic].extend([0] * (len(time_periods) - len(trends_data['topics'][topic])))
+    
+
+
+    # 创建柱状图
+    bar = (
+        Bar(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))
+        .add_xaxis(trends_data['periods'])
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="热门话题趋势"),
+            tooltip_opts=opts.TooltipOpts(trigger="axis"),
+            legend_opts=opts.LegendOpts(pos_top="5%"),
+            datazoom_opts=[
+                opts.DataZoomOpts(range_start=0, range_end=100),
+                opts.DataZoomOpts(type_="inside", range_start=0, range_end=100),
+            ],
+            yaxis_opts=opts.AxisOpts(
+                name="热度",
+                type_="value",
+                axistick_opts=opts.AxisTickOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+            ),
+            xaxis_opts=opts.AxisOpts(
+                type_='category',
+                axislabel_opts=opts.LabelOpts(rotate=45)  # 旋转 x 轴标签以避免重叠
+            )
+        )
+    )
+
+    # 添加每个话题的数据
+    colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de']
+    for i, (topic, values) in enumerate(trends_data['topics'].items()):
+        bar.add_yaxis(
+            series_name=topic,
+            y_axis=values,
+            itemstyle_opts=opts.ItemStyleOpts(color=colors[i % len(colors)]),
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+    print(bar.dump_options_with_quotes())
+    return bar.dump_options_with_quotes()

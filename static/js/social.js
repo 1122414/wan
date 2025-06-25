@@ -4,9 +4,10 @@ document.addEventListener('DOMContentLoaded', function () {
   )
 
   loadChartData(myChart)
+  loadhottData()
+  // loadhottData(topicChart)
 
   function loadChartData(myChart) {
-    console.log(myChart)
     fetch('/service/social/social_graph')
       .then((response) => {
         if (!response.ok)
@@ -17,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (result.code !== 200) throw new Error('接口返回非200状态')
         console.log('节点数量:', result.data.nodes.length)
         console.log('边数量:', result.data.edges.length)
-        console.log('边示例:', result.data.edges.slice(0, 3))
+        console.log('边示例:', result.data.edges)
+
         // 构建完整配置项
         const option = {
           title: {
@@ -49,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
           },
           animationDuration: 1500,
           animationEasingUpdate: 'quinticInOut',
+
           series: [
             {
               type: 'graph',
@@ -75,19 +78,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 { name: '用户节点', itemStyle: { color: '#5470c6' } },
                 { name: '可疑组织', itemStyle: { color: '#ff7875' } },
               ],
-              normal: {
-                lineStyle: {
-                  // 线的颜色[ default: '#aaa' ]
-                  color: '#1f1f1f',
-                  // 线宽[ default: 1 ]
-                  width: 10,
-                  // 线的类型[ default: solid实线 ]   'dashed'虚线    'dotted'
-                  type: 'solid',
-                  // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。[ default: 0.5 ]
-                  opacity: 0.5,
-                  // 边的曲度，支持从 0 到 1 的值，值越大曲度越大。[ default: 0 ]
-                  curveness: 0.5,
-                },
+              lineStyle: {
+                // 线的颜色[ default: '#aaa' ]
+                color: '#1f1f1f',
+                // 线宽[ default: 1 ]
+                width: 10,
+                // 线的类型[ default: solid实线 ]   'dashed'虚线    'dotted'
+                type: 'solid',
+                // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。[ default: 0.5 ]
+                opacity: 0.5,
+                // 边的曲度，支持从 0 到 1 的值，值越大曲度越大。[ default: 0 ]
+                curveness: 0.5,
               },
 
               // 增强边配置
@@ -104,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function () {
             },
           ],
         }
-
         // 应用配置
         myChart.setOption(option)
 
@@ -141,5 +141,38 @@ document.addEventListener('DOMContentLoaded', function () {
         `
         }
       })
+  }
+
+  function loadhottData() {
+    // 加载热门话题趋势数据
+    fetch('/service/social/topic_trends')
+    var chart = echarts.init(
+      document.getElementById('hot-chart-placeholder'),
+      'white',
+      {
+        renderer: 'canvas',
+      }
+    )
+    $.ajax({
+      type: 'GET',
+      url: 'http://127.0.0.1:5000/service/social/topic_trends',
+      dataType: 'json',
+      success: function (result) {
+        console.log(result)
+        chart.setOption(result)
+      },
+    }).catch((error) => {
+      console.error('加载热门话题趋势失败:', error)
+      const container = document.getElementById('hot-chart-placeholder')
+      container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-exclamation-circle text-danger fs-1"></i>
+                <p class="mt-3">加载失败</p>
+                <button class="btn btn-sm btn-outline-primary mt-2" onclick="location.reload()">
+                    重新加载
+                </button>
+            </div>
+        `
+    })
   }
 })

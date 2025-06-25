@@ -9,7 +9,6 @@ from blueprints.auth import bp as auth_bp
 from blueprints.service import bp as service_bp
 from flask_migrate import Migrate
 
-
 app = Flask(__name__)
 app.secret_key = 'wangantest'  # 添加这行
 

@@ -9,6 +9,8 @@ endblock %} {% block head %}
   href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
 />
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 {% endblock %} {% block body %}
 <div class="social-container">
   <div class="row mb-4">
@@ -22,7 +24,7 @@ endblock %} {% block head %}
 
   <!-- 社交媒体监测概览 -->
   <div class="row mb-4">
-    <div class="col-md-6 mb-3">
+    <div class="col-md-12 mb-3">
       <div class="card">
         <div class="card-header bg-transparent">
           <h5 class="card-title mb-0">社交网络威胁关系图</h5>
@@ -34,24 +36,21 @@ endblock %} {% block head %}
       </div>
     </div>
 
-    <div class="col-md-6 mb-3">
+    <!-- <div class="col-md-6 mb-3">
       <div class="card">
         <div class="card-header bg-transparent">
           <h5 class="card-title mb-0">热门话题趋势</h5>
         </div>
         <div class="card-body">
-          <div class="chart-placeholder">
-            <!-- 图表将通过JavaScript渲染 -->
-            <div class="text-center py-5">
-              <i class="bi bi-graph-up fs-1 text-muted"></i>
-              <p class="mt-3 text-muted">此处将显示热门话题趋势图表</p>
-            </div>
-          </div>
+          <div
+            id="hot-chart-placeholder"
+            style="background-color: bisque"
+          ></div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
-
+  <!-- <div id="hot-chart-placeholde"></div> -->
   <!-- 社交媒体监测数据 -->
   <div class="row mb-4">
     <div class="col-md-4 mb-3">

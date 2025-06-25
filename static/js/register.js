@@ -114,7 +114,7 @@
   function sendCaptcha() {
     const email = document.getElementById('email').value
     const btn = document.getElementById('getCaptchaBtn')
-    // btn.disabled = true;
+    btn.disabled = true
 
     fetch(`/auth/captcha/email?email=${email}`)
       .then((response) => response.json())
