@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (result.code !== 200) throw new Error('接口返回非200状态')
         console.log('节点数量:', result.data.nodes.length)
         console.log('边数量:', result.data.edges.length)
+        console.log('节点示例:', result.data.nodes)
         console.log('边示例:', result.data.edges)
 
         // 构建完整配置项
@@ -54,6 +55,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
           series: [
             {
+              emphasis: {
+                focus: 'adjacency',
+                label: {
+                  position: 'right',
+                  show: true,
+                },
+              },
+              roam: true,
+              lineStyle: {
+                width: 0.5,
+                curveness: 0.3,
+                opacity: 0.7,
+              },
               type: 'graph',
               layout: 'force',
               force: {
@@ -61,28 +75,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 edgeLength: [10, 50],
                 gravity: 0.05,
               },
-              symbolSize: (node) => {
-                const baseSize = node.value || 10
-                return Math.max(10, Math.min(baseSize, 50))
-              },
-              roam: true,
+              // data: [
+              //   { id: '0', name: '节点 0' },
+              //   { id: '1', name: '节点 1' },
+              // ],
+              // links: [{ source: '0', target: '1' }],
+              edgeSymbol: ['circle', 'arrow'],
+              edgeSymbolSize: [4, 10],
               label: {
                 show: true,
                 position: 'right',
               },
-              edgeSymbol: ['circle', 'arrow'],
-              edgeSymbolSize: [4, 10],
-              data: result.data.nodes, // 设置节点数据
-              links: result.data.edges, // 设置边数据
-              categories: [
-                { name: '用户节点', itemStyle: { color: '#5470c6' } },
-                { name: '可疑组织', itemStyle: { color: '#ff7875' } },
-              ],
               lineStyle: {
                 // 线的颜色[ default: '#aaa' ]
                 color: '#1f1f1f',
                 // 线宽[ default: 1 ]
-                width: 10,
+                width: 3,
                 // 线的类型[ default: solid实线 ]   'dashed'虚线    'dotted'
                 type: 'solid',
                 // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。[ default: 0.5 ]
@@ -91,17 +99,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 curveness: 0.5,
               },
 
-              // 增强边配置
-              edgeLabel: {
-                show: true,
-                formatter: '{c}',
-                fontSize: 10,
-              },
-              emphasis: {
-                lineStyle: {
-                  width: 3,
-                },
-              },
+              data: result.data.nodes,
+              links: result.data.edges,
+              categories: [
+                { name: '用户节点', itemStyle: { color: '#5470c6' } },
+                { name: '可疑组织', itemStyle: { color: '#ff7875' } },
+              ],
+
+              roam: true,
+              label: { show: true },
+              force: { repulsion: 100 },
             },
           ],
         }

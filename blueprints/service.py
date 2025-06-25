@@ -648,7 +648,7 @@ def social():
 @bp.route('/social/social_graph', methods=['GET', 'POST'])
 def social_graph():
     # 查询所有情报数据
-    intelligences = IntelligenceModel.query.limit(10000).all()
+    intelligences = IntelligenceModel.query.limit(1000).all()
     
     # 构建节点和边
     nodes = []
@@ -675,14 +675,8 @@ def social_graph():
             user_key = f"用户_{intel.user_name}"
             if user_key not in user_count:
                 nodes.append({
+                    'id': intel.user_name,
                     "name": user_key,
-                    "value": threat_size.get(intel.threaten_level, 10),  # 确保是数值
-                    "category": "用户节点",  # 添加分类字段
-                    "itemStyle": {"color": area_colors.get(intel.area, area_colors["其他"])},
-                    "properties": {  # 添加属性字段
-                        "area": intel.area,
-                        "threaten_level": intel.threaten_level
-                    }
                 })
                 user_count[user_key] = 1
         
@@ -690,15 +684,16 @@ def social_graph():
             org_key = f"组织_{intel.suspicious_organization}"
             if org_key not in org_count:
                 nodes.append({
+                    'id': intel.suspicious_organization,
                     "name": org_key,
-                    "value": threat_size.get(intel.threaten_level, 10) * 1.5,  # 确保是数值
+                    "size": threat_size.get(intel.threaten_level, 10) * 1.5,  # 确保是数值
                     "category": "可疑组织",  # 添加分类字段
                     "itemStyle": {"color": "#ff7875"},
                     "properties": {  # 添加属性字段
                         "area": intel.area,
                         "threaten_level": intel.threaten_level
-                    }
-                })
+                    }              
+                    })
                 org_count[org_key] = 1
     
     # 生成边
@@ -712,8 +707,8 @@ def social_graph():
             target = random.choice(nodes)
         
         edges.append({
-            "source": source['name'],
-            "target": target['name'],
+            "source": source['id'],
+            "target": target['id'],
         })
     
     # 创建微博风格关系图
