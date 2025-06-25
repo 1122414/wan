@@ -1,5 +1,6 @@
 from inspect import iscode
 import json
+import random
 from markupsafe import Markup
 from flask import Blueprint, request, render_template, jsonify, session, redirect, url_for
 from models import IntelligenceModel  # 假设有情报模型
@@ -8,6 +9,7 @@ from exts import mail
 from exts import redis
 from flask_mail import Message
 from sqlalchemy import or_
+from pyecharts.charts import Graph
 from pyecharts.commons.utils import JsCode
 from pyecharts.charts import WordCloud, Pie
 from pyecharts import options as opts
@@ -443,23 +445,6 @@ def get_wordcloud_data():
         'data': formatted_data
     })
 
-@bp.route('/hotspot/wordcloud', methods=['GET'])
-def get_wordcloud_word():
-    word = request.args.get('word', '')
-    if not word:
-        return jsonify({'code': 400, 'message': '缺少词语参数'})
-    
-    # 构造搜索链接
-    search_url = f"/service/intelligence?keyword={word}"
-    
-    return jsonify({
-        'code': 200,
-        'data': {
-            'word': word,
-            'search_url': search_url
-        }
-    })
-
 # 新增热点事件接口
 @bp.route('/hotspot/events', methods=['GET'])
 def get_hotspot_events():
@@ -647,3 +632,114 @@ def refresh_wordcloud_cache():
 @bp.route('/social', methods=['GET', 'POST'])
 def social():
   return render_template('social.html')
+
+@bp.route('/social/social_graph', methods=['GET', 'POST'])
+def social_graph():
+    # 查询所有情报数据
+    intelligences = IntelligenceModel.query.limit(1000).all()
+    
+    # 构建节点和边
+    nodes = []
+    edges = []
+    user_count = {}
+    org_count = {}
+    
+    # 颜色映射表 (按地区)
+    area_colors = {
+        "北京": "#5470c6",
+        "上海": "#91cc75",
+        "广东": "#fac858",
+        "江苏": "#ee6666",
+        "浙江": "#73c0de",
+        "其他": "#3ba272"
+    }
+    
+    # 威胁等级映射
+    threat_size = {"高": 30, "中": 20, "低": 10}
+    
+    # 在social_graph函数中修改节点生成逻辑
+    for intel in intelligences:
+        if intel.user_name:
+            user_key = f"用户_{intel.user_name}"
+            if user_key not in user_count:
+                nodes.append({
+                    "name": user_key,
+                    "value": threat_size.get(intel.threaten_level, 10),  # 确保是数值
+                    "category": "用户节点",  # 添加分类字段
+                    "itemStyle": {"color": area_colors.get(intel.area, area_colors["其他"])},
+                    "properties": {  # 添加属性字段
+                        "area": intel.area,
+                        "threaten_level": intel.threaten_level
+                    }
+                })
+                user_count[user_key] = 1
+        
+        if intel.suspicious_organization:
+            org_key = f"组织_{intel.suspicious_organization}"
+            if org_key not in org_count:
+                nodes.append({
+                    "name": org_key,
+                    "value": threat_size.get(intel.threaten_level, 10) * 1.5,  # 确保是数值
+                    "category": "可疑组织",  # 添加分类字段
+                    "itemStyle": {"color": "#ff7875"},
+                    "properties": {  # 添加属性字段
+                        "area": intel.area,
+                        "threaten_level": intel.threaten_level
+                    }
+                })
+                org_count[org_key] = 1
+    
+    # 生成边
+    num_edges = len(nodes)  # 根据节点数量生成相应数量的边
+    for _ in range(num_edges):
+        source = random.choice(nodes)
+        target = random.choice(nodes)
+        
+        # 确保 source 和 target 不是同一个节点且边不存在
+        while source['name'] == target['name'] or any(e['source'] == source['name'] and e['target'] == target['name'] for e in edges):
+            target = random.choice(nodes)
+        
+        edges.append({
+            "source": source['name'],
+            "target": target['name'],
+            "lineStyle": {"width": random.randint(1, 5)}  # 随机宽度
+        })
+    
+    # 创建微博风格关系图
+    graph = (
+        Graph(init_opts=opts.InitOpts(theme="white", width="100%", height="600px"))
+        .add(
+            "",
+            nodes,
+            edges,
+            repulsion=5000,
+            layout="circular",
+            is_rotate_label=True,
+            linestyle_opts=opts.LineStyleOpts(curve=0.2, width=1.5),
+            label_opts=opts.LabelOpts(position="right"),
+            edge_symbol=["circle", "arrow"],
+            edge_symbol_size=[2, 8],
+            # 修复 categories 格式
+            categories=[  
+                {"name": "用户节点"}, 
+                {"name": "可疑组织"}
+            ]
+        )
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="社交网络威胁关系图"),
+            legend_opts=opts.LegendOpts(
+                orient="vertical",
+                pos_right="2%",
+                pos_top="middle"
+            ),
+            tooltip_opts=opts.TooltipOpts(formatter="{b}<br/>类型: {c}")
+        )
+    )
+    
+    return jsonify({
+        'code': 200,
+        'data': {
+            'nodes': nodes,
+            'edges': edges
+        }
+    })
