@@ -330,4 +330,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     performSearch(page)
   }
+
+  // 检查URL中的keyword参数（适配热点分析图云跳转）
+  const urlParams = new URLSearchParams(window.location.search)
+  const keyword = urlParams.get('keyword')
+
+  if (keyword) {
+    // 自动填充搜索框
+    searchInput.value = keyword
+
+    // 自动触发搜索（延迟确保DOM加载完成）
+    setTimeout(() => {
+      performSearch(1)
+    }, 300)
+  }
 })

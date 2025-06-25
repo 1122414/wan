@@ -267,4 +267,13 @@ document.addEventListener('DOMContentLoaded', function () {
       performSearch(1, source)
     })
   })
+
+  // 添加词云点击事件处理函数
+  function handleWordCloudClick(word) {
+    console.log('词云点击:', word)
+    window.location.href = `/service/intelligence?keyword=${word}`
+  }
+
+  // 初始化页面
+  loadHotspotEvents()
 })

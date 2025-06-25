@@ -1,0 +1,174 @@
+{% extends 'base.html' %} {% block title %} 知了传课-注册 {% endblock %} {%
+block head %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/register.css') }}"
+/>
+{% endblock %} {% block body %}
+<!--代码部分-->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <!-- 控制表单最大宽度 -->
+      <form
+        class="row g-3 needs-validation"
+        novalidate
+        id="registerForm"
+        method="POST"
+      >
+        <ul>
+          <!-- 用户名验证 -->
+          <li class="col-6">
+            <label for="username" class="form-label">用户名</label>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              name="username"
+              pattern=".{6,}"
+              required
+            />
+            <div class="invalid-feedback">用户名至少需要6个字符</div>
+          </li>
+
+          <!-- 密码验证 -->
+          <li class="col-6">
+            <label for="password" class="form-label">密码</label>
+            <div class="input-group has-validation">
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                pattern=".{8,}"
+                required
+              />
+              <span
+                class="input-group-text password-toggle"
+                id="togglePassword"
+              >
+                <i class="bi bi-eye-slash"></i>
+              </span>
+              <div class="invalid-feedback">密码长度不能小于8位</div>
+            </div>
+          </li>
+
+          <!-- 确认密码验证 -->
+          <li class="col-6">
+            <label for="confirmPassword" class="form-label">确认密码</label>
+            <div class="input-group has-validation">
+              <input
+                type="password"
+                class="form-control"
+                id="confirmPassword"
+                name="confirmPassword"
+                required
+              />
+              <span
+                class="input-group-text password-toggle"
+                id="toggleConfirmPassword"
+              >
+                <i class="bi bi-eye-slash"></i>
+              </span>
+              <div class="invalid-feedback" id="confirmPasswordFeedback">
+                两次输入的密码不一致
+              </div>
+            </div>
+          </li>
+
+          <!-- 邮箱验证 -->
+          <li class="col-6">
+            <label for="email" class="form-label">邮箱</label>
+            <div class="input-group has-validation">
+              <span class="input-group-text">@</span>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                required
+              />
+              <div class="invalid-feedback">
+                请输入有效的邮箱地址（例：user@example.com）
+              </div>
+            </div>
+          </li>
+
+          <!-- 手机号验证 -->
+          <li class="col-6">
+            <label for="phone" class="form-label">手机号</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              name="phone"
+              pattern="1[3-9]\d{9}"
+              required
+            />
+            <div class="invalid-feedback">请输入有效的11位手机号码</div>
+          </li>
+
+          <!-- 验证码验证 -->
+          <li class="col-6">
+            <label for="captcha" class="form-label">验证码</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="captcha"
+              name="captcha"
+              required
+            />
+            <div class="invalid-feedback">请输入有效验证码</div>
+            <!-- 按钮没指定type，默认是submit -->
+            <button
+              class="btn btn-outline-primary"
+              type="button"
+              id="getCaptchaBtn"
+              onclick="window.sendCaptcha()"
+            >
+              获取验证码
+            </button>
+          </li>
+
+          <li class="col-6">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="invalidCheck"
+                required
+              />
+              <label class="form-check-label" for="invalidCheck">
+                同意用户协议
+              </label>
+              <div class="invalid-feedback">您必须勾选此项</div>
+            </div>
+          </li>
+
+          <li class="col-6 text-center mt-4">
+            <!-- 添加居中类和上边距 -->
+            <div class="d-grid gap-3">
+              <!-- 添加Bootstrap间距控制 -->
+              <div class="form-check">
+                <!-- 协议复选框保持原样 -->
+              </div>
+              <button class="btn btn-primary btn-lg" type="submit">
+                提交注册
+              </button>
+            </div>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block js %}
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+<!-- 添加Bootstrap图标 -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+/>
+{% endblock %}

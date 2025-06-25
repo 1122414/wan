@@ -1,0 +1,241 @@
+{% extends 'base.html' %} {% block title %} 态势感知 - 网络安全态势感知平台
+{%endblock %} {% block head %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/situation.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% endblock %} {% block body %}
+<div class="situation-container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="section-header">
+        <h2>网络安全态势概览</h2>
+        <p class="text-muted">实时监控网络安全态势，及时发现潜在威胁</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <!-- 安全指标卡片 -->
+    <div class="col-md-3 mb-3">
+      <div class="card security-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">安全事件</h6>
+              <h3 class="card-title mb-0">24</h3>
+            </div>
+            <div class="security-icon bg-danger-subtle">
+              <i class="bi bi-shield-exclamation"></i>
+            </div>
+          </div>
+          <p class="card-text mt-3">
+            <small class="text-danger"
+              ><i class="bi bi-arrow-up-right"></i> 较昨日增长 12%</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card security-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">漏洞数量</h6>
+              <h3 class="card-title mb-0">17</h3>
+            </div>
+            <div class="security-icon bg-warning-subtle">
+              <i class="bi bi-bug"></i>
+            </div>
+          </div>
+          <p class="card-text mt-3">
+            <small class="text-success"
+              ><i class="bi bi-arrow-down-right"></i> 较昨日下降 5%</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card security-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">攻击来源</h6>
+              <h3 class="card-title mb-0">8</h3>
+            </div>
+            <div class="security-icon bg-primary-subtle">
+              <i class="bi bi-globe"></i>
+            </div>
+          </div>
+          <p class="card-text mt-3">
+            <small class="text-danger"
+              ><i class="bi bi-arrow-up-right"></i> 较昨日增长 3%</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card security-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">安全评分</h6>
+              <h3 class="card-title mb-0">78</h3>
+            </div>
+            <div class="security-icon bg-success-subtle">
+              <i class="bi bi-graph-up"></i>
+            </div>
+          </div>
+          <p class="card-text mt-3">
+            <small class="text-success"
+              ><i class="bi bi-arrow-up-right"></i> 较昨日提升 2%</small
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <!-- 安全事件趋势 -->
+    <div class="col-md-8 mb-3">
+      <div class="card">
+        <div class="card-header bg-transparent">
+          <h5 class="card-title mb-0">主题情报总量</h5>
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <!-- 选择器 -->
+            <div class="col-md-6">
+              <select class="form-select" id="event-type-range-selector">
+                <option value="all">全部</option>
+                <option value="specific">特定类型</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <select class="form-select" id="event-time-range-selector">
+                <option value="all">全部</option>
+                <option value="7days">近七天</option>
+                <option value="24hours">最近24小时</option>
+                <option value="30days">最近30天</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- 预警信息 -->
+            <div class="col-md-4">
+              <div class="d-flex flex-column align-items-center">
+                <div class="circle-counter" id="alert-info-counter">32289</div>
+                <div class="counter-label">预警信息</div>
+              </div>
+            </div>
+
+            <!-- 当前监测总数 -->
+            <div class="col-md-4 text-center">
+              <div class="current-monitor-total">
+                <p>当前监测总数</p>
+                <h1 id="current-monitor-total">221202</h1>
+              </div>
+            </div>
+
+            <!-- 处置消息 -->
+            <div class="col-md-4">
+              <div class="d-flex flex-column align-items-center">
+                <div class="circle-counter" id="handled-messages-counter">
+                  0
+                </div>
+                <div class="counter-label">处置消息</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 时间戳 -->
+          <div class="text-center mt-4">
+            <p id="timestamp">2025年04月15日 18:43:01</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 情报来源趋势 -->
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div
+          class="card-header bg-transparent d-flex justify-content-between align-items-center"
+        >
+          <h5 class="card-title mb-0">情报来源</h5>
+          <select
+            class="form-select form-select-sm"
+            id="intelligence-time-range-selector"
+            style="width: 250px"
+          >
+            <option value="7days">近七天</option>
+            <option value="24hours">最近24小时</option>
+            <option value="30days">最近30天</option>
+          </select>
+        </div>
+        <div class="card-body">
+          <div id="intelligence-source-trend-chart" style="height: 250px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- 最新安全事件列表 -->
+    <div class="col-12">
+      <div class="card">
+        <div
+          class="card-header bg-transparent d-flex justify-content-between align-items-center"
+        >
+          <h5 class="card-title mb-0">最新安全事件</h5>
+          <button class="btn btn-sm btn-outline-primary">查看全部</button>
+        </div>
+        <!-- 新增可疑组织、可疑用户 -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-header bg-transparent">
+                <h5 class="card-title mb-0">新增可疑组织</h5>
+              </div>
+              <div class="card-body">
+                <ul id="new-suspect-organizations" class="list-group">
+                  <!-- 动态生成内容 -->
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-header bg-transparent">
+                <h5 class="card-title mb-0">新增可疑用户</h5>
+              </div>
+              <div class="card-body">
+                <ul id="new-suspect-users" class="list-group">
+                  <!-- 动态生成内容 -->
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block js %}
+<script src="{{ url_for('static', filename='js/situation.js') }}"></script>
+{% endblock %}

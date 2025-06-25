@@ -1,4 +1,6 @@
+from inspect import iscode
 import json
+from markupsafe import Markup
 from flask import Blueprint, request, render_template, jsonify, session, redirect, url_for
 from models import IntelligenceModel  # 假设有情报模型
 from exts import db
@@ -6,13 +8,12 @@ from exts import mail
 from exts import redis
 from flask_mail import Message
 from sqlalchemy import or_
+from pyecharts.commons.utils import JsCode
 from pyecharts.charts import WordCloud, Pie
 from pyecharts import options as opts
 from pyecharts.globals import ThemeType
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB  # 添加MultinomialNB导入
-
-
 
 bp = Blueprint("service", __name__, url_prefix="/service")
 
@@ -260,6 +261,7 @@ def search_intelligence():
 @bp.route('/hotspot', methods=['GET', 'POST'])
 def hotspot():
     wordcloud_html = get_wordcloud_html()
+    print(wordcloud_html)
     stats_html = get_stats_html()
     return render_template('hotspot.html', 
                            wordcloud_html=wordcloud_html,
@@ -275,25 +277,57 @@ def get_wordcloud_html():
     
     words = [(d['word'], d['count']) for d in data]
     
-    # 创建词云图
+    # 创建词云图时直接添加点击事件处理
     wordcloud = (
         WordCloud(init_opts=opts.InitOpts(
             theme=ThemeType.DARK,
             width="100%",
-            height="400px"
+            height="400px",
+            animation_opts=opts.AnimationOpts(animation=False)
         ))
         .add(
             series_name="热点词云", 
             data_pair=words, 
             word_size_range=[12, 60],
-            shape='circle'
+            shape='circle',
+            tooltip_opts=opts.TooltipOpts(
+                formatter=JsCode(
+                    "function(params) {"
+                    "   return params.name + ': ' + params.value;"
+                    "}"
+                )
+            ),    
         )
         .set_global_opts(
             title_opts=opts.TitleOpts(title="热点词云"),
-            tooltip_opts=opts.TooltipOpts(is_show=True)
+            tooltip_opts=opts.TooltipOpts(
+                trigger="item"
+            )
+        )
+        .set_series_opts(
+            emphasis_opts=opts.EmphasisOpts(
+                itemstyle_opts=opts.ItemStyleOpts(
+                    border_color='#fff', 
+                    border_width=1
+                )
+            )
+        )
+        .add_js_funcs(
+        """
+        // 获取图表实例
+            var chart = echarts.init(document.querySelector('.chart-container'));
+            
+            // 添加点击事件监听
+            chart.on('click', function(params) {
+                console.log('词云点击:', params.name);
+                window.location.href = '/service/intelligence?keyword=' + params.name;
+            });
+        """
         )
     )
-    return wordcloud.render_embed()
+    
+    # 返回词云HTML，不再添加额外的JavaScript代码
+    return Markup(wordcloud.render_embed())
 
 #热点统计
 @bp.route('/hotspot/stats_html')
@@ -397,11 +431,33 @@ def get_wordcloud_data():
         redis.setex(cache_key, 24*3600, json.dumps(word_freq))
 
     # 将词频列表转换为前端期望的格式
-    formatted_data = [{'word': word, 'count': count} for word, count in word_freq]
+    # 在返回数据中添加搜索链接
+    formatted_data = [{
+        'word': word, 
+        'count': count,
+        'search_url': f"/service/intelligence?keyword={word}"  # 添加搜索链接
+    } for word, count in word_freq]
 
     return jsonify({
         'code': 200,
         'data': formatted_data
+    })
+
+@bp.route('/hotspot/wordcloud', methods=['GET'])
+def get_wordcloud_word():
+    word = request.args.get('word', '')
+    if not word:
+        return jsonify({'code': 400, 'message': '缺少词语参数'})
+    
+    # 构造搜索链接
+    search_url = f"/service/intelligence?keyword={word}"
+    
+    return jsonify({
+        'code': 200,
+        'data': {
+            'word': word,
+            'search_url': search_url
+        }
     })
 
 # 新增热点事件接口
@@ -568,7 +624,7 @@ def get_hotspot_stats():
     }
     
     # 缓存结果（1小时）
-    redis.setex(cache_key, 3600, json.dumps(response_data))
+    redis.setex(cache_key, 24*3600, json.dumps(response_data))
     return jsonify({
         'code': 200,
         'data': {
